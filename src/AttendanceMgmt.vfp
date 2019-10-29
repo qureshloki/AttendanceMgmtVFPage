@@ -1,0 +1,80 @@
+<apex:page controller="AttendanceMgmtCtrl" sidebar="false" docType="html-5.0">
+    <apex:slds />
+    <apex:outputText rendered="{!conType == 'None'}">
+        <p> The page is visible only for contacts of record types Teacher/ Student...</p>
+    </apex:outputText>
+    <apex:form rendered="{!conType != 'None'}">
+        <script>
+        	function onAttendenceChangeJS(studentId,index,status){
+                console.log({studentId,index,status});
+                onAttendenceChange(studentId,index,status);
+            }
+        </script>
+        <apex:actionFunction name="onAttendenceChange" action="{!onAttendanceChange}" reRender="attendanceTablePb">
+        	<apex:param name="studentId" value="" />
+            <apex:param name="sessionIndex" value="" />
+            <apex:param name="attendanceStatus" value="" />
+    	</apex:actionFunction>
+
+        <apex:actionFunction name="onSubjectChange" action="{!onSubjectChange}" reRender="attendanceTablePb">
+        	<apex:param name="selectedSubject" assignTo="{!selectedSubject}" value="" />
+    	</apex:actionFunction>
+
+    	<apex:pageBlock id="subjectSelectPb" >
+    		<div align="center">
+            	<apex:outputLabel style="font-size: large; font-weight: bold; margin-right: 10px">
+                    Subject:
+                </apex:outputLabel>
+            	<select id="subjectSelect" value="{!selectedSubject}" onchange="onSubjectChange(this.value)">
+                    <apex:repeat value="{!subjects}" var="subject">
+                    	<option value="{!subject.Id}">
+                        	{!subject.Name}
+                        </option>
+                    </apex:repeat>
+    			</select>
+            </div>
+    	</apex:pageBlock>
+        
+        <apex:pageBlock id="attendanceTablePb">
+            <apex:outputText rendered="{!sessions.size==0}">
+                <p> No sessions found ... </p>
+            </apex:outputText>
+            
+            <apex:pageBlockSection rendered="{!sessions.size>0}">
+                <apex:dataTable value="{!attendances}" var="studentAttendances"
+                 styleClass="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <apex:column>
+						<apex:facet name="header"></apex:facet>
+						<apex:outputText value="{!studentAttendances.student.Name}"/>
+					</apex:column>
+					<apex:column>
+						<apex:facet name="header">Status</apex:facet>
+                        	<span class="slds-icon_container slds-icon_container_circle 
+                                         slds-icon-action-{!studentAttendances.indicatorIcon.name}"
+                                  style="background-color:{!studentAttendances.indicatorIcon.color};" >
+                                <svg aria-hidden="true" class="slds-icon slds-icon_xx-small">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" 
+                                         xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/action-sprite/svg/symbols.svg#'+studentAttendances.indicatorIcon.name)}">
+                                    </use>
+                                </svg>
+                                <span class="slds-assistive-text">Status</span>
+                            </span>
+					</apex:column>
+                    <apex:repeat value="{!sessionIndices}" var="i">
+						<apex:column>
+							<apex:facet name="header">
+								<apex:outputText value="{0,date,dd/MM/yy}">
+									<apex:param value="{!sessions[i].Session_Date__c}" /> 
+								</apex:outputText>
+							</apex:facet>
+							<apex:inputField onchange="onAttendenceChangeJS('{!studentAttendances.student.Id}',{!i},this.value)"
+                            	value="{!studentAttendances.attendances[i].Status__c}" rendered="{!isTeacher}"/>
+                            <apex:outputText value="{!studentAttendances.attendances[i].Status__c}" rendered="{!!isTeacher}" />
+						</apex:column>
+                    </apex:repeat>
+					
+                </apex:dataTable>
+            </apex:pageBlockSection>	
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

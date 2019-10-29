@@ -12,11 +12,11 @@ This was coded as part of an interview assignment.
 
 1. The data model/schema is provided on the Saleforce org as:
 
-   ![Schema](schema.jpg?raw=true)
+   ![Schema](schema.JPG?raw=true)
 
 2. The UI mockup is provided as:
 
-   ![Schema](uiMockup.jpg?raw=true)
+   ![Schema](uiMockup.JPG?raw=true)
    Note: Based on attendace percentage, the "Status" column displays a red cross, yellow tick or green tick.
 
 #### Implementation:
